@@ -5,6 +5,7 @@ import { Card, Button, Modal } from "flowbite-react";
 import toast from "react-hot-toast";
 import { MdOutlineRemoveCircleOutline } from "react-icons/md";
 import { Spinner } from "flowbite-react";
+import { useSelector } from "react-redux";
 
 function FavoutiteRecipesPage() {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
@@ -13,6 +14,7 @@ function FavoutiteRecipesPage() {
   const [selectedCategoryDescription, setSelectedCategoryDescription] =
     useState("");
   const [deletedRecipeId, setDeletedRecipeId] = useState(null);
+  const token = useSelector((state) => state.user.token);
 
   const handleButtonClick = (description) => {
     setSelectedCategoryDescription(description);
@@ -24,12 +26,17 @@ function FavoutiteRecipesPage() {
       try {
         const response = await axios.get(
           "http://localhost:3001/receipe/favouriterecipe",
-          { withCredentials: true }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         setFavoriteRecipes(response.data); // Assuming response.data is an array of favorite recipes
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching favorite recipes:", error);
+        if (error.response.status === 401) {
+          toast.error("Please Login first!");
+        } else {
+          toast.error("Opps Somthins went wrong!");
+        }
+        // console.error("Error fetching favorite recipes:", error);
         setLoading(false);
       }
     };

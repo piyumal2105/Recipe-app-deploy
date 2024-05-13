@@ -21,7 +21,6 @@ const URL = process.env.ORIGIN_URL;
 
 app.use(
   cors({
-    credentials: true,
     origin: [URL, "https://recipe-app-deploy-1.onrender.com"],
   })
 );

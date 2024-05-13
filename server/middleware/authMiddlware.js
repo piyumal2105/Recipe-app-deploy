@@ -1,22 +1,26 @@
-import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
+import User from "../models/user.model.js";
 
 const authMiddleware = async (req, res, next) => {
-  const userCookie = req.cookies.assess_token;
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res.status(401).json({ error: "Authorization token not found" });
+  }
+
+  // Grab the token from headers (taking the "Bearer " string away)
+  const token = authorization.split(" ")[1];
 
   try {
-    if (!userCookie) throw new Error("Unauthorized");
+    // Decode and extract the user id from token
+    const { id } = jwt.verify(token, process.env.SECRET_KEY);
 
-    jwt.verify(userCookie, process.env.SECRET_KEY, (error, user) => {
-      if (error) throw new Error("Unauthorized");
+    // Save the user in request
+    req.user = await User.findById(id).select("_id");
 
-      req.user = user.id;
-
-      next();
-    });
+    // Go to the next function/middleware
+    next();
   } catch (error) {
-    // throw new Error(error.message);
-    res.status(403).json({ message: error.message });
+    res.status(401).json({ error: error.message });
   }
 };
 

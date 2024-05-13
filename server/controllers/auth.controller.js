@@ -60,12 +60,7 @@ export const signin = async (req, res, next) => {
 
     const { password: pass, ...rest } = validUser._doc;
 
-    res
-      .status(200)
-      .cookie("assess_token", token, {
-        httpOnly: true,
-      })
-      .json(rest);
+    res.status(200).json({ user: rest, token });
   } catch (error) {
     next(error);
   }
@@ -112,19 +107,6 @@ export const google = async (req, res, next) => {
     next(error);
   }
 };
-
-// export const logout = async (req, res, next) => {
-//   try {
-//     res.cookie("assess_token", "", {
-//       expires: new Date(0),
-//       httpOnly: true,
-//     });
-
-//     res.status(200, { message: "Successfully logout" });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 export const logout = async (req, res, next) => {
   try {

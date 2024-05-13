@@ -6,6 +6,7 @@ import { Button, Modal } from "flowbite-react";
 import toast from "react-hot-toast";
 import { MdFavoriteBorder } from "react-icons/md";
 import { Spinner } from "flowbite-react";
+import { useSelector } from "react-redux";
 
 function RecipesPage() {
   const [categories, setCategories] = useState([]);
@@ -14,6 +15,7 @@ function RecipesPage() {
   const [selectedCategoryDescription, setSelectedCategoryDescription] =
     useState("");
   const [activeFilter, setActiveFilter] = useState(null);
+  const token = useSelector((state) => state.user.token);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -47,12 +49,18 @@ function RecipesPage() {
           strCategoryThumb: strCategoryThumb,
           strCategoryDescription: strCategoryDescription,
         },
-        { withCredentials: true }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Successfully added to the favorite!");
     } catch (error) {
-      console.error("Failed to add to favorites:", error);
-      toast.error("Error added to favourite!");
+      if (error.response.status === 401) {
+        toast.error("You Need to login before adding to favourite!");
+      }
+      else {
+        toast.error("Error added to favourite!");
+      }
+      // console.error("Failed to add to favorites:", error.response.status);
+      // toast.error("Error added to favourite!");
     }
   };
 
