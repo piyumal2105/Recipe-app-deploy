@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get("/getAllRecipes", recipeController.fetchRecipesByCategory);
 router.post("/addfavourite", authMiddleware, addFavorite);
-router.get("/favouriterecipe", authMiddleware,getAllFavourite);
+router.get("/favouriterecipe", authMiddleware, getAllFavourite);
 router.delete("/delete/:id", removeFavourite);
 
 export default router;
